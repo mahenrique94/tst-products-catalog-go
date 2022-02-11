@@ -1,0 +1,9 @@
+services:
+  database:
+    container_name: pc_database
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=products_catalog
+    image: mysql
+    ports:
+      - 3306:3306

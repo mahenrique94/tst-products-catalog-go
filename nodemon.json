@@ -1,0 +1,16 @@
+{
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "execMap": {
+    "go": "go run"
+  },
+  "ext": "go",
+  "ignore": [
+    "node_modules"
+  ],
+  "verbose": true,
+  "watch": [
+    "./src"
+  ]
+}
