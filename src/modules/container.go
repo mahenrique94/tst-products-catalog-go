@@ -1,7 +1,7 @@
 package modules
 
 import (
-	"github.com/mahenrique94/products-catalog-go/src/application/services"
+	"github.com/mahenrique94/products-catalog-go/src/application"
 	"github.com/mahenrique94/products-catalog-go/src/externals"
 	"github.com/mahenrique94/products-catalog-go/src/infrastructure/storage/repositories"
 	"github.com/mahenrique94/products-catalog-go/src/interface/http/controllers"
@@ -18,7 +18,11 @@ func CreateContainer() *dig.Container {
 
 	c.Provide(repositories.NewProductRepository)
 
-	c.Provide(services.NewProductService)
+	c.Provide(application.NewCreateAProductUseCase)
+	c.Provide(application.NewGetAProductUseCase)
+	c.Provide(application.NewListProductsUseCase)
+	c.Provide(application.NewRemoveAProductUseCase)
+	c.Provide(application.NewUpdateAProductUseCase)
 
 	c.Provide(controllers.NewProductController)
 

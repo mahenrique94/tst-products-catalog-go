@@ -5,16 +5,32 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mahenrique94/products-catalog-go/src/application/services"
+	"github.com/mahenrique94/products-catalog-go/src/application"
 	"github.com/mahenrique94/products-catalog-go/src/domain/dtos"
 )
 
 type ProductController struct {
-	Service *services.ProductService
+	CreateAProductUseCase *application.CreateAProductUseCase
+	GetAProductUseCase    *application.GetAProductUseCase
+	ListProductsUseCase   *application.ListProductsUseCase
+	RemoveAProductUseCase *application.RemoveAProductUseCase
+	UpdateAProductUseCase *application.UpdateAProductUseCase
 }
 
-func NewProductController(service *services.ProductService) *ProductController {
-	return &ProductController{Service: service}
+func NewProductController(
+	createAProductUseCase *application.CreateAProductUseCase,
+	getAProductUseCase *application.GetAProductUseCase,
+	listProductsUseCase *application.ListProductsUseCase,
+	removeAProductUseCase *application.RemoveAProductUseCase,
+	updateAProductUseCase *application.UpdateAProductUseCase,
+) *ProductController {
+	return &ProductController{
+		CreateAProductUseCase: createAProductUseCase,
+		GetAProductUseCase:    getAProductUseCase,
+		ListProductsUseCase:   listProductsUseCase,
+		RemoveAProductUseCase: removeAProductUseCase,
+		UpdateAProductUseCase: updateAProductUseCase,
+	}
 }
 
 func (p *ProductController) Create(c *gin.Context) {
@@ -27,7 +43,7 @@ func (p *ProductController) Create(c *gin.Context) {
 		return
 	}
 
-	product, err := p.Service.Create(productIn)
+	product, err := p.CreateAProductUseCase.Execute(productIn)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
@@ -42,7 +58,7 @@ func (p *ProductController) Create(c *gin.Context) {
 
 func (p *ProductController) Get(c *gin.Context) {
 	id, _ := strconv.ParseInt(c.Param("id"), 0, 64)
-	product, err := p.Service.Get(id)
+	product, err := p.GetAProductUseCase.Execute(id)
 
 	if product.ID == 0 {
 		c.JSON(http.StatusNotFound, gin.H{
@@ -64,7 +80,7 @@ func (p *ProductController) Get(c *gin.Context) {
 }
 
 func (p *ProductController) List(c *gin.Context) {
-	products, err := p.Service.List()
+	products, err := p.ListProductsUseCase.Execute()
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -80,7 +96,7 @@ func (p *ProductController) List(c *gin.Context) {
 
 func (p *ProductController) Remove(c *gin.Context) {
 	id, _ := strconv.ParseInt(c.Param("id"), 0, 64)
-	product, err := p.Service.Get(id)
+	product, err := p.GetAProductUseCase.Execute(id)
 
 	if product.ID == 0 {
 		c.JSON(http.StatusNotFound, gin.H{
@@ -96,7 +112,7 @@ func (p *ProductController) Remove(c *gin.Context) {
 		return
 	}
 
-	success, _ := p.Service.Remove(id)
+	success, _ := p.RemoveAProductUseCase.Execute(id)
 	if success {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Product remove with success",
@@ -108,7 +124,7 @@ func (p *ProductController) Remove(c *gin.Context) {
 func (p *ProductController) Update(c *gin.Context) {
 	var productIn dtos.ProductDTOIn
 	id, _ := strconv.ParseInt(c.Param("id"), 0, 64)
-	product, _ := p.Service.Get(id)
+	product, _ := p.GetAProductUseCase.Execute(id)
 
 	if product.ID == 0 {
 		c.JSON(http.StatusNotFound, gin.H{
@@ -124,7 +140,7 @@ func (p *ProductController) Update(c *gin.Context) {
 		return
 	}
 
-	product, err := p.Service.Update(productIn, id)
+	product, err := p.UpdateAProductUseCase.Execute(productIn, id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
